@@ -12,7 +12,7 @@ class KyukoInfo:
         self.status = None
     
     def __repr__(self):
-        return 'KyukoInfo()'
+        return str(self.__dict__)
     
     def __str__(self):
         return str(self.__dict__)
@@ -24,7 +24,7 @@ class KyukoInfo:
 def fetchKyukoInfo():
     url = 'http://hirose.sendai-nct.ac.jp/kyuko/kyuko.cgi'
     html = requests.get(url).content
-    soup = BeautifulSoup(html, 'lxml')
+    soup = BeautifulSoup(html, 'html5lib')
     attrs = {'width': 650}
     kyuko = list()
     for elem in soup.findAll('table', attrs):
@@ -36,4 +36,3 @@ def fetchKyukoInfo():
         detail.status = re.findall('./img/(.*).gif', str(elem.select('img')))[0]
         kyuko.append(detail)
     return kyuko
-
