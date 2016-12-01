@@ -12,10 +12,13 @@ class KyukoInfo:
         self.status = None
     
     def __repr__(self):
-        return str(self.__dict__)
+        return 'KyukoInfo()'
     
     def __str__(self):
         return str(self.__dict__)
+
+    def to_dict(self):
+        return self.__dict__
 
 
 def fetchKyukoInfo():
