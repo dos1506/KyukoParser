@@ -11,6 +11,23 @@ class KyukoInfo:
         self.subject = None
         self.status = None
     
+    def __getitem__(self, element):
+        if element == 'date':
+            return self.date
+        elif element == 'department':
+            return self.department
+        elif element == 'time':
+            return self.time
+        elif element == 'teacher':
+            return self.teacher
+        elif element == 'subject':
+            return self.subject
+        elif element == 'status':
+            return status
+        else:
+           raise IndexError() 
+
+
     def __repr__(self):
         return str(self.__dict__)
     
@@ -19,6 +36,7 @@ class KyukoInfo:
 
     def to_dict(self):
         return self.__dict__
+      
 
 
 def fetchKyukoInfo():
