@@ -1,6 +1,7 @@
 import requests
 from bs4 import BeautifulSoup
 import re
+import mojimoji
 
 class KyukoInfo:
     
@@ -24,10 +25,12 @@ class KyukoInfo:
         elif element == 'subject':
             return self.subject
         elif element == 'status':
-            return status
+            return self.status
         else:
            raise IndexError() 
 
+    def __setitem__(self, key, value):
+        self.__dict__[key] = value
 
     def __repr__(self):
         return str(self.__dict__)
@@ -44,20 +47,34 @@ def fetchKyukoInfo():
     url = 'http://hirose.sendai-nct.ac.jp/kyuko/kyuko.cgi'
     html = requests.get(url)
     html.encoding = 'shif_jis'
+
     soup = BeautifulSoup(html.content, 'html5lib')
     attrs = {'width': 650}
     kyuko = list()
-    num_map = {'�T': 'I', '�U': 'II', '�V': 'III'}
+
     for elem in soup.findAll('table', attrs):
-        detail = KyukoInfo()
-        detail.date = list(re.findall('([0-9]{,2})月([0-9]{,2})日<.*>\((.*)\)</font>', str(elem.b))[0])
-        detail.department, detail.time = [x.string for x in elem.select('td font b')]
-        detail.teacher = elem.select('td font[color=#00008B]')[0].string.strip()
-        subject = elem.select('tr td tr font')[0].string
-        for num in num_map:
-            if num in subject:
-                subject = subject.replace(num, num_map[num])
-        detail.subject = subject
-        detail.status = re.findall('./img/(.*).gif', str(elem.select('img')))[0]
-        kyuko.append(detail)
+        kyuko.append(parseKyukoRecord(elem))
+
     return kyuko
+
+def parseKyukoRecord(record):
+    num_map = {'�T': 'I', '�U': 'II', '�V': 'III'}
+
+    detail = KyukoInfo()
+    detail.date    = list(re.findall('([0-9]{,2})月([0-9]{,2})日<.*>\((.*)\)</font>', str(record.b))[0])
+    detail.department, detail.time = [x.string for x in record.select('td font b')]
+    detail.teacher = record.select('td font[color=#00008B]')[0].string.strip()
+    detail.status  = re.findall('./img/(.*).gif', str(record.select('img')))[0]
+
+    subject        = record.select('tr td tr font')[0].string
+    # ローマ数字から半角英数字へ変換
+    for num in num_map:
+       if num in subject:
+           subject = subject.replace(num, num_map[num])
+    detail.subject = subject
+
+    # 全角英数字を半角英数字へ変換
+    for k in detail.to_dict().keys():
+        detail[k] = mojimoji.zen_to_han(str(detail[k]))
+
+    return detail
