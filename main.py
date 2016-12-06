@@ -7,7 +7,7 @@ class KyukoResource:
 
     def on_get(self, req, resp):
         kyuko = fetchKyukoInfo()
-        resp.body = json.dumps([x.to_dict() for x in kyuko])
+        resp.body = json.dumps([x.to_dict() for x in kyuko], ensure_ascii=False)
 
 
 app = falcon.API()
