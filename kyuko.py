@@ -45,7 +45,18 @@ class KyukoInfo:
 
 def fetchKyukoInfo():
     url = 'http://hirose.sendai-nct.ac.jp/kyuko/kyuko.cgi'
-    html = requests.get(url)
+    try:
+        html = requests.get(url)
+    except ConnectionError:
+        return {'ERROR': 'Connection Error'}
+    except Timeout:
+        return {'ERROR': 'Timeout'}
+    except TooManyRedirects:
+        return {'ERROR': 'Too Many Redirects'}
+
+    if html.status_code != 200:
+        return {'ERROR': html.status_code}
+
     html.encoding = 'shif_jis'
 
     soup = BeautifulSoup(html.content, 'html5lib')
