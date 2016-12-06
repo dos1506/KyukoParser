@@ -92,3 +92,4 @@ ENV/
 uwsgi.ini
 sockets/
 
+nohup.out
