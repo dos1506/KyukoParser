@@ -85,7 +85,8 @@ def parseKyukoRecord(record):
     detail.subject = subject
 
     # 全角英数字を半角英数字へ変換
-    for k in detail.to_dict().keys():
-        detail[k] = mojimoji.zen_to_han(str(detail[k]), kana=False)
+    detail.department = mojimoji.zen_to_han(str(detail.department))
+    detail.subject    = mojimoji.zen_to_han(str(detail.subject))
+    detail.time       = mojimoji.zen_to_han(str(detail.time))
 
     return detail
