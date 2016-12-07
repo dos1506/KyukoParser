@@ -2,6 +2,7 @@ import requests
 from bs4 import BeautifulSoup
 import re
 import mojimoji
+from collections import namedtuple
 
 class KyukoInfo:
     
@@ -72,10 +73,12 @@ def parseKyukoRecord(record):
     num_map = {'�T': 'I', '�U': 'II', '�V': 'III'}
 
     detail = KyukoInfo()
-    detail.date    = list(re.findall('([0-9]{,2})月([0-9]{,2})日<.*>\((.*)\)</font>', str(record.b))[0])
-    detail.department, detail.time = [x.string for x in record.select('td font b')]
     detail.teacher = record.select('td font[color=#00008B]')[0].string.strip()
     detail.status  = re.findall('./img/(.*).gif', str(record.select('img')))[0]
+    detail.department, detail.time = [x.string for x in record.select('td font b')]
+
+    date = list(re.findall('([0-9]{,2})月([0-9]{,2})日<.*>\((.*)\)</font>', str(record.b))[0])
+    detail.date = {'month': date[0], 'day': date[1], 'youbi': date[2]}
 
     subject        = record.select('tr td tr font')[0].string
     # ローマ数字から半角英数字へ変換
@@ -86,7 +89,7 @@ def parseKyukoRecord(record):
 
     # 全角英数字を半角英数字へ変換
     detail.department = mojimoji.zen_to_han(str(detail.department))
-    detail.subject    = mojimoji.zen_to_han(str(detail.subject))
+    detail.subject    = mojimoji.zen_to_han(str(detail.subject), kana=False)
     detail.time       = mojimoji.zen_to_han(str(detail.time))
 
     return detail
