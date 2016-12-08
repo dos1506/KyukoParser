@@ -91,5 +91,6 @@ def parseKyukoRecord(record):
     detail.department = mojimoji.zen_to_han(str(detail.department))
     detail.subject    = mojimoji.zen_to_han(str(detail.subject), kana=False)
     detail.time       = mojimoji.zen_to_han(str(detail.time))
+    detail.teacher    = mojimoji.zen_to_han(str(detail.teacher))
 
     return detail
